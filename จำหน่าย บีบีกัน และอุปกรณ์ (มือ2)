@@ -1,0 +1,261 @@
+
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BBGUN Market - ตลาดซื้อขายบีบีกัน</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#FF7D00',
+                        dark: '#1F2937',
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        .card-hover:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .modal { display: none; }
+        .modal.active { display: flex; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+<header class="bg-white shadow-md sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-3">
+        <div class="flex items-center justify-between">
+            <a href="#" class="text-xl font-bold text-primary flex items-center gap-1">
+                <i class="fa fa-crosshairs"></i> BBGUN Market
+            </a>
+            <div class="flex gap-2">
+                <button onclick="openModal('loginModal')" class="px-3 py-2 border border-primary text-primary rounded-md text-sm">เข้าสู่ระบบ</button>
+                <button onclick="openModal('registerModal')" class="px-3 py-2 bg-primary text-white rounded-md text-sm">ลงทะเบียน</button>
+            </div>
+        </div>
+        <nav class="flex justify-around mt-3 text-sm">
+            <a href="#home" class="py-2">หน้าแรก</a>
+            <a href="#products" class="py-2">สินค้า</a>
+            <a href="#sell" class="py-2">ลงขาย</a>
+        </nav>
+    </div>
+</header>
+
+<section id="home" class="bg-gradient-to-r from-blue-50 to-orange-50 py-10">
+    <div class="container mx-auto px-4 text-center">
+        <h1 class="text-2xl font-bold mb-3">ซื้อ-ขายบีบีกัน</h1>
+        <p class="text-gray-600 mb-5">ทุกคนลงขายได้ฟรี ปลอดภัย</p>
+        <a href="#products" class="inline-block px-5 py-3 bg-primary text-white rounded-lg mr-2">ชมสินค้า</a>
+        <a href="#sell" class="inline-block px-5 py-3 bg-secondary text-white rounded-lg">ลงขายฟรี</a>
+    </div>
+</section>
+
+<section class="py-8 bg-white">
+    <div class="container mx-auto px-4">
+        <h2 class="text-xl font-bold text-center mb-5">หมวดหมู่</h2>
+        <div class="grid grid-cols-3 gap-3">
+            <button onclick="filterCategory('electric')" class="p-3 bg-gray-50 rounded-lg text-center">
+                <span class="text-2xl">🎮</span>
+                <p class="text-xs mt-1">ไฟฟ้า</p>
+            </button>
+            <button onclick="filterCategory('spring')" class="p-3 bg-gray-50 rounded-lg text-center">
+                <span class="text-2xl">🔫</span>
+                <p class="text-xs mt-1">สปริง</p>
+            </button>
+            <button onclick="filterCategory('gas')" class="p-3 bg-gray-50 rounded-lg text-center">
+                <span class="text-2xl">⚡</span>
+                <p class="text-xs mt-1">แก๊ส</p>
+            </button>
+            <button onclick="filterCategory('parts')" class="p-3 bg-gray-50 rounded-lg text-center">
+                <span class="text-2xl">🛠️</span>
+                <p class="text-xs mt-1">อะไหล่</p>
+            </button>
+            <button onclick="filterCategory('gear')" class="p-3 bg-gray-50 rounded-lg text-center">
+                <span class="text-2xl">🧥</span>
+                <p class="text-xs mt-1">ชุด/อุปกรณ์</p>
+            </button>
+            <button onclick="filterCategory('all')" class="p-3 bg-blue-50 rounded-lg text-center">
+                <span class="text-2xl">📋</span>
+                <p class="text-xs mt-1">ทั้งหมด</p>
+            </button>
+        </div>
+    </div>
+</section>
+
+<section id="products" class="py-8 bg-gray-50">
+    <div class="container mx-auto px-4">
+        <h2 class="text-xl font-bold text-center mb-2">สินค้าล่าสุด</h2>
+        <p class="text-gray-500 text-center text-sm mb-4" id="filter-status">แสดงสินค้าทั้งหมด</p>
+        <input type="text" id="searchInput" placeholder="🔍 ค้นหาสินค้า..." 
+               class="w-full px-4 py-3 border rounded-lg mb-5" oninput="searchProducts()">
+        <div id="productGrid" class="grid grid-cols-2 gap-4">
+        </div>
+    </div>
+</section>
+
+<section id="sell" class="py-8 bg-white">
+    <div class="container mx-auto px-4">
+        <h2 class="text-xl font-bold text-center mb-5">ลงขายสินค้า 📦</h2>
+        <form id="sellForm" onsubmit="addProduct(event)" class="bg-gray-50 p-5 rounded-xl">
+            <div class="mb-3">
+                <label class="block text-sm font-medium mb-1">ชื่อสินค้า *</label>
+                <input type="text" id="p-name" required class="w-full px-3 py-2 border rounded-lg">
+            </div>
+            <div class="mb-3">
+                <label class="block text-sm font-medium mb-1">หมวดหมู่ *</label>
+                <select id="p-category" class="w-full px-3 py-2 border rounded-lg">
+                    <option value="electric">ระบบไฟฟ้า</option>
+                    <option value="spring">ระบบสปริง</option>
+                    <option value="gas">ระบบแก๊ส</option>
+                    <option value="parts">อะไหล่</option>
+                    <option value="gear">ชุด/อุปกรณ์</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="block text-sm font-medium mb-1">ราคา (บาท) *</label>
+                <input type="number" id="p-price" required class="w-full px-3 py-2 border rounded-lg">
+            </div>
+            <div class="mb-3">
+                <label class="block text-sm font-medium mb-1">สภาพ</label>
+                <select id="p-condition" class="w-full px-3 py-2 border rounded-lg">
+                    <option>ใหม่</option><option>เหมือนใหม่</option><option>สภาพดี</option><option>ใช้งานได้</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="block text-sm font-medium mb-1">รายละเอียด *</label>
+                <textarea id="p-desc" rows="3" required class="w-full px-3 py-2 border rounded-lg"></textarea>
+            </div>
+            <div class="mb-3">
+                <label class="block text-sm font-medium mb-1">ลิงก์รูปภาพ</label>
+                <input type="url" id="p-image" class="w-full px-3 py-2 border rounded-lg" placeholder="https://...">
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm font-medium mb-1">ชื่อผู้ติดต่อ *</label>
+                <input type="text" id="p-seller" required class="w-full px-3 py-2 border rounded-lg">
+            </div>
+            <button type="submit" class="w-full py-3 bg-secondary text-white rounded-lg font-medium">✅ ลงประกาศเลย</button>
+        </form>
+    </div>
+</section>
+
+<section class="py-5 bg-red-50 border-y border-red-100">
+    <div class="container mx-auto px-4">
+        <p class="text-red-700 text-sm">⚠️ บีบีกันเป็นของเล่น ห้ามดัดแปลงเหมือนอาวุธจริง ปฏิบัติตามกฎหมายไทย</p>
+    </div>
+</section>
+
+<footer class="bg-gray-900 text-white py-5 text-center text-sm">
+    <p>BBGUN Market © 2026</p>
+</footer>
+
+<div id="loginModal" class="modal fixed inset-0 bg-black/50 items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-xl p-5 w-full max-w-sm">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-bold">เข้าสู่ระบบ</h3>
+            <button onclick="closeModal('loginModal')" class="text-gray-400"><i class="fa fa-times"></i></button>
+        </div>
+        <input type="email" placeholder="อีเมล" class="w-full px-3 py-2 border rounded-lg mb-3">
+        <input type="password" placeholder="รหัสผ่าน" class="w-full px-3 py-2 border rounded-lg mb-4">
+        <button onclick="alert('เข้าสู่ระบบสำเร็จ!')" class="w-full bg-primary text-white py-2 rounded-lg">เข้าสู่ระบบ</button>
+    </div>
+</div>
+
+<div id="registerModal" class="modal fixed inset-0 bg-black/50 items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-xl p-5 w-full max-w-sm">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-bold">ลงทะเบียน</h3>
+            <button onclick="closeModal('registerModal')" class="text-gray-400"><i class="fa fa-times"></i></button>
+        </div>
+        <input type="text" placeholder="ชื่อผู้ใช้" class="w-full px-3 py-2 border rounded-lg mb-3">
+        <input type="email" placeholder="อีเมล" class="w-full px-3 py-2 border rounded-lg mb-3">
+        <input type="password" placeholder="รหัสผ่าน" class="w-full px-3 py-2 border rounded-lg mb-4">
+        <button onclick="alert('ลงทะเบียนสำเร็จ! ลงขายได้ทันที')" class="w-full bg-primary text-white py-2 rounded-lg">ลงทะเบียน</button>
+    </div>
+</div>
+
+<script>
+let products = [
+    { id:1, name:'บีบีกันไฟฟ้า A1 สภาพดี', category:'electric', price:2800, condition:'สภาพดี', desc:'ใช้น้อย อุปกรณ์ครบ', seller:'คนรักบีบีกัน', image:'https://picsum.photos/id/119/400/300' },
+    { id:2, name:'บีบีกันแก๊ส G18 ครบชุด', category:'gas', price:3500, condition:'เหมือนใหม่', desc:'ซื้อมาไม่ถึงเดือน', seller:'มืออาชีพ', image:'https://picsum.photos/id/139/400/300' },
+    { id:3, name:'บีบีกันสปริง มือใหม่', category:'spring', price:890, condition:'ใช้งานได้', desc:'เหมาะเริ่มต้น', seller:'คนรักสนาม', image:'https://picsum.photos/id/154/400/300' },
+    { id:4, name:'ชุดอัปเกรดไฟฟ้า', category:'parts', price:1200, condition:'ใหม่', desc:'อะไหล่คุณภาพ', seller:'อะไหล่คุณภาพ', image:'https://picsum.photos/id/160/400/300' },
+];
+
+let currentCategory = 'all';
+
+function renderProducts(list) {
+    const grid = document.getElementById('productGrid');
+    grid.innerHTML = '';
+    list.forEach(p => {
+        grid.innerHTML += `
+            <div class="bg-white rounded-lg overflow-hidden shadow card-hover">
+                <img src="${p.image}" alt="${p.name}" class="w-full h-32 object-cover">
+                <div class="p-3">
+                    <span class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">${getCatName(p.category)}</span>
+                    <h3 class="font-medium text-sm mt-1 line-clamp-2">${p.name}</h3>
+                    <p class="text-orange-500 font-bold">฿ ${p.price.toLocaleString()}</p>
+                    <p class="text-xs text-gray-500">โดย: ${p.seller}</p>
+                    <button class="w-full mt-2 bg-primary text-white py-1.5 rounded text-sm" 
+                            onclick="alert('ติดต่อ: ${p.seller}\\nสินค้า: ${p.name}\\nราคา: ฿${p.price.toLocaleString()}')">
+                        ติดต่อ
+                    </button>
+                </div>
+            </div>
+        `;
+    });
+}
+
+function getCatName(cat) {
+    const n = { electric:'ไฟฟ้า', spring:'สปริง', gas:'แก๊ส', parts:'อะไหล่', gear:'ชุด/อุปกรณ์' };
+    return n[cat] || cat;
+}
+
+function filterCategory(cat) {
+    currentCategory = cat;
+    document.getElementById('filter-status').textContent = 
+        cat==='all' ? 'แสดงสินค้าทั้งหมด' : `หมวดหมู่: ${getCatName(cat)}`;
+    applyFilters();
+}
+
+function searchProducts() { applyFilters(); }
+
+function applyFilters() {
+    let filtered = [...products];
+    if (currentCategory !== 'all') filtered = filtered.filter(p => p.category === currentCategory);
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    if (q) filtered = filtered.filter(p => p.name.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q));
+    renderProducts(filtered);
+}
+
+function addProduct(e) {
+    e.preventDefault();
+    const newP = {
+        id: Date.now(),
+        name: document.getElementById('p-name').value,
+        category: document.getElementById('p-category').value,
+        price: parseInt(document.getElementById('p-price').value),
+        condition: document.getElementById('p-condition').value,
+        desc: document.getElementById('p-desc').value,
+        seller: document.getElementById('p-seller').value,
+        image: document.getElementById('p-image').value || 'https://picsum.photos/400/300?random=' + Date.now()
+    };
+    products.unshift(newP);
+    applyFilters();
+    e.target.reset();
+    alert('✅ ลงประกาศสำเร็จ!');
+    document.getElementById('products').scrollIntoView({behavior:'smooth'});
+}
+
+function openModal(id) { document.getElementById(id).classList.add('active'); }
+function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+renderProducts(products);
+</script>
+</body>
+</html>
