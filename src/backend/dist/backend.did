@@ -1,0 +1,110 @@
+type Value = 
+ variant {
+   "bool": bool;
+   float: float64;
+   "int": int;
+   "nat": nat;
+   "null";
+   "text": text;
+ };
+type UserRole = 
+ variant {
+   admin;
+   guest;
+   user;
+ };
+type SellerContact = 
+ record {
+   seller: principal;
+   sellerName: text;
+ };
+type Result__1 = 
+ record {
+   hasMore: bool;
+   rows: vec vec Cell;
+ };
+type Result_2 = 
+ variant {
+   err: Error;
+   ok;
+ };
+type Result_1 = 
+ variant {
+   err: ListingError;
+   ok;
+ };
+type Result = 
+ variant {
+   err: ListingError;
+   ok: Listing;
+ };
+type ListingError = 
+ variant {
+   notAuthorized;
+   notFound: nat;
+ };
+type Listing = 
+ record {
+   category: Category;
+   createdAt: int;
+   description: text;
+   id: nat;
+   images: vec text;
+   price: nat;
+   seller: principal;
+   sellerName: text;
+   title: text;
+   updatedAt: int;
+ };
+type Error = 
+ variant {
+   AmbiguousAttribute: record {
+                         field: text;
+                         sources: vec text;
+                       };
+   FrontendOriginMismatch: record {
+                             expected: vec text;
+                             got: text;
+                           };
+   FrontendOriginsNotConfigured;
+   MalformedCandid;
+   MissingField: text;
+   MixedSsoSources: record {
+                      otherKeys: vec text;
+                      ssoKeys: vec text;
+                    };
+   NoAttributes;
+   Stale: record {ageNs: nat;};
+   UnknownNonce;
+   UntrustedSsoSource: record {domain: text;};
+ };
+type Cell = 
+ record {
+   name: text;
+   value: Value;
+ };
+type Category = 
+ variant {
+   bbGun;
+   equipment;
+ };
+service : {
+  _initialize_access_control: () -> ();
+  _internet_identity_sign_in_finish: () -> (Result_2);
+  _internet_identity_sign_in_start: () -> (blob);
+  assignCallerUserRole: (user: principal, role: UserRole) -> ();
+  createListing: (title: text, category: Category, price: nat, description:
+   text, images: vec text, sellerName: text) -> (Result);
+  deleteListing: (id: nat) -> (Result_1);
+  execute: (qJson: text) -> (Result__1) query;
+  getApiDoc: () -> (text) query;
+  getCallerUserRole: () -> (UserRole) query;
+  getListing: (id: nat) -> (opt Listing) query;
+  getSellerContact: (id: nat) -> (opt SellerContact) query;
+  isCallerAdmin: () -> (bool) query;
+  listListings: (category: opt Category, keyword: opt text) ->
+   (vec Listing) query;
+  schema: () -> (text) query;
+  updateListing: (id: nat, title: text, category: Category, price: nat,
+   description: text, images: vec text) -> (Result);
+}

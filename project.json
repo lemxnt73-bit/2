@@ -1,0 +1,20 @@
+{
+  "overview": "A marketplace website for buying and selling BB guns and second-hand airsoft equipment, where anyone can sign in and post listings.",
+  "features": [
+    "Browse BB gun and equipment listings by category",
+    "Sign in with Internet Identity and post your own listings",
+    "Upload product photos with progress",
+    "Filter and search listings by category",
+    "View product detail pages with seller contact info",
+    "Edit or delete your own listings"
+  ],
+  "category": "marketplace",
+  "tags": [
+    "marketplace",
+    "bb-gun",
+    "airsoft",
+    "buy-sell",
+    "thai"
+  ],
+  "last_updated": "2026-09-14T12:39:57.749Z"
+}
