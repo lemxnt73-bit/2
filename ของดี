@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Field Gear Market</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#101315;color:#eee;font-family:Arial,sans-serif}
+header{padding:24px 16px;background:#18201e;border-bottom:1px solid #33413c}h1{margin:0;color:#d9e6dc}
+header p{color:#aab7ae}.bar{display:flex;gap:8px;padding:12px;overflow:auto;background:#151918;position:sticky;top:0;z-index:2}
+button,select,input,textarea{font:inherit}button{border:0;border-radius:9px;padding:10px 14px;cursor:pointer}
+.cat{background:#29322f;color:#fff;white-space:nowrap}.cat.active{background:#5f806b}
+main{max-width:1100px;margin:auto;padding:16px}.tools{display:flex;gap:8px;margin-bottom:16px}
+input,select,textarea{width:100%;background:#1b211f;color:#fff;border:1px solid #3b4843;border-radius:9px;padding:11px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
+.card{background:#1a1f1d;border:1px solid #303a36;border-radius:13px;overflow:hidden}
+.pic{height:145px;display:flex;align-items:center;justify-content:center;font-size:55px;background:#252d29}
+.info{padding:13px}.price{font-size:19px;font-weight:bold;color:#b9d8c2}.seller{font-size:13px;color:#9daaa3}
+.add{background:#5f806b;color:#fff;width:100%;margin-top:8px}.sell{background:#d6e4d9;color:#162019}
+.modal{display:none;position:fixed;inset:0;background:#000b;z-index:5;padding:18px;overflow:auto}.box{max-width:600px;margin:40px auto;background:#171c1a;padding:20px;border-radius:15px}
+.row{display:grid;gap:9px;margin:9px 0}.close{float:right;background:#333;color:#fff}
+footer{text-align:center;color:#7f8984;padding:30px}
+</style>
+</head>
+<body>
+<header><h1>🛡️ Field Gear Market</h1><p>ตลาดกลางสำหรับประกาศอุปกรณ์ป้องกันและอุปกรณ์สนาม</p></header>
+<div class="bar" id="cats"></div>
+<main>
+<div class="tools"><input id="q" placeholder="🔎 ค้นหาสินค้า..." oninput="render()"><button class="sell" onclick="openSell()">＋ ตั้งขาย</button></div>
+<div id="products" class="grid"></div>
+</main>
+<div id="modal" class="modal"><div class="box">
+<button class="close" onclick="closeSell()">ปิด</button><h2>ตั้งขายสินค้า</h2>
+<div class="row"><input id="seller" placeholder="ชื่อผู้ขาย"><input id="name" placeholder="ชื่อสินค้า">
+<select id="cat"><option>เสื้อป้องกันสนาม</option><option>หมวกนิรภัย</option><option>แว่นตานิรภัย</option><option>ถุงมือ</option><option>กระเป๋า</option><option>อุปกรณ์สนาม</option></select>
+<input id="price" type="number" min="1" placeholder="ราคา (บาท)"><textarea id="desc" placeholder="รายละเอียดสินค้า"></textarea></div>
+<button class="add" onclick="publish()">ลงประกาศ</button>
+</div></div>
+<footer>ตัวอย่าง Marketplace สำหรับอุปกรณ์ป้องกันและอุปกรณ์สนามที่ไม่ใช่อาวุธ</footer>
+<script>
+const seed=[];
+let items=JSON.parse(localStorage.getItem("fieldGearItems")||"null")||seed, selected="ทั้งหมด";
+const cats=["ทั้งหมด","เสื้อป้องกันสนาม","หมวกนิรภัย","แว่นตานิรภัย","ถุงมือ","กระเป๋า","อุปกรณ์สนาม"];
+function renderCats(){document.getElementById("cats").innerHTML=cats.map(c=>`<button class="cat ${c==selected?'active':''}" onclick="selected='${c}';render()">${c}</button>`).join("")}
+function render(){renderCats();let q=document.getElementById("q").value.toLowerCase();let list=items.filter(x=>(selected=="ทั้งหมด"||x.cat==selected)&&x.name.toLowerCase().includes(q));document.getElementById("products").innerHTML=list.length?list.map((x,i)=>`<article class="card"><div class="pic">${x.icon||"📦"}</div><div class="info"><h3>${x.name}</h3><div class="seller">ผู้ขาย: ${x.seller}</div><p>${x.desc||""}</p><div class="price">฿${Number(x.price).toLocaleString()}</div><button class="add" onclick="alert('ตัวอย่าง: ติดต่อผู้ขายเพื่อดำเนินการสั่งซื้อ')">สนใจสินค้า</button></div></article>`).join(""):`<div style="grid-column:1/-1;text-align:center;padding:50px;color:#8f9994">ยังไม่มีประกาศสินค้า<br><br><button class="sell" onclick="openSell()">＋ ตั้งขายสินค้าชิ้นแรก</button></div>`}
+function openSell(){document.getElementById("modal").style.display="block"}function closeSell(){document.getElementById("modal").style.display="none"}
+function publish(){let seller=document.getElementById("seller").value.trim(),name=document.getElementById("name").value.trim(),cat=document.getElementById("cat").value,price=+document.getElementById("price").value,desc=document.getElementById("desc").value.trim();if(!seller||!name||!price){alert("กรอกชื่อผู้ขาย ชื่อสินค้า และราคา");return}items.unshift({seller,name,cat,price,desc,icon:"📦"});localStorage.setItem("fieldGearItems",JSON.stringify(items));["seller","name","price","desc"].forEach(id=>document.getElementById(id).value="");closeSell();render()}
+render();
+</script>
+</body></html>
